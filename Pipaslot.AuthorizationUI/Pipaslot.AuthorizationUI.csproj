@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\app.css" />
+    <None Remove="Assets\bootstrap.min.css" />
+    <None Remove="Assets\bootstrap.min.js" />
+    <None Remove="Assets\jquery.min.js" />
+    <None Remove="Assets\tether.min.css" />
+    <None Remove="Assets\tether.min.js" />
+    <None Remove="Assets\vue.min.js" />
+    <None Remove="Templates\index.html" />
+    <None Remove="Templates\layout.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\app.css" />
+    <EmbeddedResource Include="Assets\bootstrap.min.css" />
+    <EmbeddedResource Include="Assets\bootstrap.min.js" />
+    <EmbeddedResource Include="Assets\jquery.min.js" />
+    <EmbeddedResource Include="Assets\tether.min.css" />
+    <EmbeddedResource Include="Assets\tether.min.js" />
+    <EmbeddedResource Include="Assets\vue.min.js" />
+    <EmbeddedResource Include="Templates\index.html" />
+    <EmbeddedResource Include="Templates\layout.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pipaslot.Authorization.Web\Pipaslot.Authorization.Web.csproj" />
+    <ProjectReference Include="..\Pipaslot.Authorization\Pipaslot.Authorization.csproj" />
+  </ItemGroup>
+
+
+</Project>
