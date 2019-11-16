@@ -5,12 +5,6 @@ dotnet pack --configuration Release --output ../releases
 
 // Push
 nuget setApiKey [key] 
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Data.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Data.EntityFrameworkCore.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Data.Mvc.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.EntityFrameworkCore.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Mvc.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Security.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Security.EntityFrameworkCore.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.Infrastructure.Security.Jwt.1.0.0.nupkg
-nuget push -Source nuget.org releases/Pipaslot.SecurityUI.1.0.0.nupkg
+nuget push -Source nuget.org releases/Pipaslot.Authorization.1.0.0.nupkg
+nuget push -Source nuget.org releases/Pipaslot.Authorization.Web.1.0.0.nupkg
+nuget push -Source nuget.org releases/Pipaslot.AuthorizationUI.1.0.0.nupkg
