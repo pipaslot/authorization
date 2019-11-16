@@ -2,9 +2,10 @@
 
 namespace Pipaslot.AuthorizationUI
 {
+    [Resource("Permission management")]
     public enum AuthorizationUIPermissions
     {
-        [StaticPermission("Access Security UI")]
+        [StaticPermission("Access Admin UI")]
         Access = 0
     }
 }
