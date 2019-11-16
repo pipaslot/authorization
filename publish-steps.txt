@@ -1,7 +1,7 @@
 ///////// How to produce new release
 
 // Pack all projects
-dotnet pack --configuration Release --output ../releases
+dotnet pack --configuration Release --output ./releases
 
 // Push
 nuget setApiKey [key] 
