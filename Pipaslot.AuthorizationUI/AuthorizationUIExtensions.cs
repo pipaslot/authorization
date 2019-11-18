@@ -8,15 +8,15 @@ namespace Pipaslot.AuthorizationUI
 {
     public static class AuthorizationUIExtensions
     {
-        public static IApplicationBuilder UseAuthorizationUI<TKey>(this IApplicationBuilder builder, Action<AuthorizationUIOptions> setup = null)
+        public static IApplicationBuilder UseAuthorizationUI(this IApplicationBuilder builder, Action<AuthorizationUIOptions> setup = null)
         {
             var options = new AuthorizationUIOptions();
             setup?.Invoke(options);
-            return builder.UseMiddleware<AuthorizationUIMiddleware<TKey>>(options);
+            return builder.UseMiddleware<AuthorizationUIMiddleware>(options);
         }
 
         public static IServiceCollection AddAuthorizationUI<TKey, TPermissionStore>(this IServiceCollection services, int resourceUniqueId)
-            where TPermissionStore : class, IPermissionStore<TKey>
+            where TPermissionStore : class, IPermissionStore
         {
             services.AddPermissions<TKey, TPermissionStore>();
             services.AddPermissionResource<AuthorizationUIPermissions>(resourceUniqueId);

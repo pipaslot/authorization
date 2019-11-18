@@ -77,7 +77,7 @@ namespace Demo.App
 
             app.UseAuthentication();
 
-            app.UseAuthorizationUI<long>(options =>
+            app.UseAuthorizationUI(options =>
             {
                 options.RoutePrefix = "security";
             });

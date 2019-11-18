@@ -8,12 +8,12 @@ using Pipaslot.AuthorizationUI.ActionAbstraction;
 
 namespace Pipaslot.AuthorizationUI.Actions
 {
-    class ResourcesInstancesJsonAction<TKey> : AJsonAction
+    class ResourcesInstancesJsonAction : AJsonAction
     {
-        private readonly TKey _role;
+        private readonly string _role;
         private readonly int _rangeStart;
 
-        public ResourcesInstancesJsonAction(TKey role, int rangeStart)
+        public ResourcesInstancesJsonAction(string role, int rangeStart)
         {
             _role = role;
             _rangeStart = rangeStart;
@@ -21,10 +21,10 @@ namespace Pipaslot.AuthorizationUI.Actions
 
         protected override object GetData(HttpContext context, IServiceProvider services)
         {
-            var manager = (IPermissionManager<TKey>)services.GetService(typeof(IPermissionManager<TKey>));
+            var manager = (IPermissionManager)services.GetService(typeof(IPermissionManager));
             if (manager == null)
             {
-                throw new ApplicationException($"Can not resolve service {typeof(IPermissionManager<TKey>)} from Dependency Injection.");
+                throw new ApplicationException($"Can not resolve service {typeof(IPermissionManager)} from Dependency Injection.");
             }
 
             var result = manager.GetResourceInstancePermissionsAsync(_role, _rangeStart).Result;

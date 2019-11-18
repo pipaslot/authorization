@@ -21,10 +21,6 @@ namespace Demo.App.Database
                 .HasMany(u => u.UserRoles)
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId);
-            modelBuilder.Entity<Role>()
-                .HasMany(u => u.Permissions)
-                .WithOne(r => r.Role)
-                .HasForeignKey(r => r.RoleId);
             base.OnModelCreating(modelBuilder);
         }
 

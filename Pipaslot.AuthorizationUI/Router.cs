@@ -9,13 +9,13 @@ using Pipaslot.AuthorizationUI.Actions;
 
 namespace Pipaslot.AuthorizationUI
 {
-    internal class Router<TKey>
+    internal class Router
     {
         private readonly HttpRequest _request;
-        private readonly IUser<TKey> _user;
+        private readonly IUser _user;
         private readonly string _routePrefix;
 
-        public Router(HttpRequest request, string routePrefix, IUser<TKey> user)
+        public Router(HttpRequest request, string routePrefix, IUser user)
         {
             _request = request;
             _user = user;
@@ -39,18 +39,18 @@ namespace Pipaslot.AuthorizationUI
             //API
             if (MatchAndAuthorize("api/roles"))
             {
-                return new RoleJsonAction<TKey>();
+                return new RoleJsonAction();
             }
             if (MatchAndAuthorize("api/resources"))
             {
                 _request.Query.TryGetValue("role", out var role);
-                return new ResourcesJsonAction<TKey>(ChangeType<TKey>(role));
+                return new ResourcesJsonAction(role);
             }
             if (MatchAndAuthorize("api/resource-instances"))
             {
                 _request.Query.TryGetValue("role", out var role);
                 _request.Query.TryGetValue("resourceId", out var resourceId);
-                return new ResourcesInstancesJsonAction<TKey>(ChangeType<TKey>(role), int.Parse(resourceId));
+                return new ResourcesInstancesJsonAction(role, int.Parse(resourceId));
             }
             if (MatchAndAuthorize("api/privilege"))
             {
@@ -64,7 +64,7 @@ namespace Pipaslot.AuthorizationUI
                 else if (isAllowedString.Equals("false")) isAllowed = false;
                 var resourceIdInt = int.Parse(resourceId);
                 var permissionIdInt = int.Parse(permissionId);
-                return new PrivilegeJsonAction<TKey>(ChangeType<TKey>(role), resourceIdInt, permissionIdInt, instanceId, isAllowed);
+                return new PrivilegeJsonAction(role, resourceIdInt, permissionIdInt, instanceId, isAllowed);
             }
             
             return new TemplateAction(_routePrefix, "index");

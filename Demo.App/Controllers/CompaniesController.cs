@@ -37,7 +37,7 @@ namespace Demo.App.Controllers
         {
             var role = new TokenRole
             {
-                Id = 1,
+                Id = "1",
                 Name = "Admin",
                 Type = RoleType.Admin
             };
@@ -50,7 +50,7 @@ namespace Demo.App.Controllers
         {
             var role = new TokenRole
             {
-                Id = 2,
+                Id = "2",
                 Name = "User",
                 Type = RoleType.User,
             };
@@ -83,7 +83,7 @@ namespace Demo.App.Controllers
 
         private class TokenRole : IRole
         {
-            public object Id { get; set; }
+            public string Id { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
             public RoleType Type { get; set; }

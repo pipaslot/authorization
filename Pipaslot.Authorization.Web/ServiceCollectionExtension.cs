@@ -11,7 +11,7 @@ namespace Pipaslot.Authorization.Web
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection AddPermissions<TKey, TPermissionStore>(this IServiceCollection services)
-            where TPermissionStore : class, IPermissionStore<TKey>
+            where TPermissionStore : class, IPermissionStore
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddPermissions<TKey, TPermissionStore, IdentityProvider<TKey>>();

@@ -8,14 +8,14 @@ using Pipaslot.Authorization.Models;
 
 namespace Pipaslot.Authorization
 {
-    public class PermissionManager<TKey> : IPermissionManager<TKey>
+    public class PermissionManager : IPermissionManager
     {
         private readonly ResourceCollection _resources;
-        private readonly IPermissionStore<TKey> _permissionStore;
-        private readonly PermissionCache<TKey> _cache;
+        private readonly IPermissionStore _permissionStore;
+        private readonly PermissionCache _cache;
         private readonly IEnumerable<IResourceInstanceProvider> _resourceInstanceProviders;
 
-        public PermissionManager(ResourceCollection resources, IPermissionStore<TKey> permissionStore, PermissionCache<TKey> cache, IEnumerable<IResourceInstanceProvider> resourceInstanceProviders)
+        public PermissionManager(ResourceCollection resources, IPermissionStore permissionStore, PermissionCache cache, IEnumerable<IResourceInstanceProvider> resourceInstanceProviders)
         {
             _resources = resources;
             _permissionStore = permissionStore;
@@ -23,7 +23,7 @@ namespace Pipaslot.Authorization
             _resourceInstanceProviders = resourceInstanceProviders;
         }
 
-        public bool IsAllowed(ICollection<TKey> roles, IConvertible permissionEnum)
+        public bool IsAllowed(ICollection<string> roles, IConvertible permissionEnum)
         {
             var permissionUid = _resources.ToNumber(permissionEnum);
             var isAllowed = _cache.Load(
@@ -34,7 +34,7 @@ namespace Pipaslot.Authorization
             return isAllowed ?? false;
         }
 
-        public bool IsAllowed<TInstanceKey>(ICollection<TKey> roles, IConvertible permissionEnum, TInstanceKey instanceKey)
+        public bool IsAllowed<TInstanceKey>(ICollection<string> roles, IConvertible permissionEnum, TInstanceKey instanceKey)
         {
             var permissionUid = _resources.ToNumber(permissionEnum);
             var instance = instanceKey?.ToString();
@@ -55,7 +55,7 @@ namespace Pipaslot.Authorization
             return isAllowed ?? false;
         }
 
-        public async Task SetPermission(TKey role, int resourceId, int permissionId, bool? isEnabled)
+        public async Task SetPermission(string role, int resourceId, int permissionId, bool? isEnabled)
         {
             _cache.Clear(role, new ResourcePermissionKey
             {
@@ -66,7 +66,7 @@ namespace Pipaslot.Authorization
         }
 
 
-        public async Task SetPermission(TKey role, int resourceId, int permissionId, string instanceId, bool? isEnabled)
+        public async Task SetPermission(string role, int resourceId, int permissionId, string instanceId, bool? isEnabled)
         {
             _cache.Clear(role, new ResourcePermissionKey
             {
@@ -86,7 +86,7 @@ namespace Pipaslot.Authorization
             return _permissionStore.GetSystemRoles();
         }
 
-        public async Task<IReadOnlyList<ResourcePermissions>> GetResourcePermissionsAsync(TKey roleId)
+        public async Task<IReadOnlyList<ResourcePermissions>> GetResourcePermissionsAsync(string roleId)
         {
             var permissions = await _permissionStore.GetRoleStaticPermissionsAsync(roleId);
             return _resources
@@ -124,7 +124,7 @@ namespace Pipaslot.Authorization
             };
         }
 
-        public async Task<IReadOnlyList<ResourceInstancePermissions>> GetResourceInstancePermissionsAsync(TKey roleId, int resourceId)
+        public async Task<IReadOnlyList<ResourceInstancePermissions>> GetResourceInstancePermissionsAsync(string roleId, int resourceId)
         {
             var definition = _resources.FirstOrDefault(d => d.ResourceId == resourceId);
             if (definition == null)

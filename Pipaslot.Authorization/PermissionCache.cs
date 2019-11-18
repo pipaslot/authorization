@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Pipaslot.Authorization.Models;
 
 namespace Pipaslot.Authorization
 {
-    public class PermissionCache<TKey>
+    public class PermissionCache
     {
-        private readonly List<RoleList<TKey>> _roleLists = new List<RoleList<TKey>>();
+        private readonly List<RoleList> _roleLists = new List<RoleList>();
 
-        public bool? Load(Func<bool?> callback, IEnumerable<TKey> roleIds, ResourcePermissionKey permissionUid, string instanceId)
+        public bool? Load(Func<bool?> callback, IEnumerable<string> roleIds, ResourcePermissionKey permissionUid, string instanceId)
         {
-            var newRoles = new RoleList<TKey>(roleIds);
+            var newRoles = new RoleList(roleIds);
             //Find or create roles
             var existingRoles = _roleLists.FirstOrDefault(r => r.Key == newRoles.Key);
             if (existingRoles == null)
@@ -35,7 +33,7 @@ namespace Pipaslot.Authorization
         /// <summary>
         /// Remove cached record
         /// </summary>
-        public void Clear(TKey roleId, ResourcePermissionKey permissionUid)
+        public void Clear(string roleId, ResourcePermissionKey permissionUid)
         {
             var roleLists = _roleLists.Where(r => r.Ids.Contains(roleId));
             foreach (var roleList in roleLists)
@@ -44,16 +42,16 @@ namespace Pipaslot.Authorization
             }
         }
 
-        internal class RoleList<TKey2>
+        internal class RoleList
         {
             public string Key { get; }
-            public List<TKey2> Ids { get; }
+            public List<string> Ids { get; }
             public List<Permission> Permissions { get; } = new List<Permission>();
 
-            public RoleList(IEnumerable<TKey2> ids)
+            public RoleList(IEnumerable<string> ids)
             {
                 Ids = ids.OrderBy(i => i).ToList();
-                Key = string.Join("#", Ids);
+                Key = string.Join("|#|", Ids);
             }
         }
         internal class Permission

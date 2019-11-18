@@ -122,7 +122,7 @@ namespace Pipaslot.Authorization.Web
 
         private class Role : IRole
         {
-            public object Id { get; set; }
+            public string Id { get; set; }
 
             public RoleType Type { get; set; } = RoleType.Custom;
         }

@@ -2,12 +2,12 @@
 
 namespace Pipaslot.Authorization
 {
-    public interface IUser<out TKey> : IUser
+    public interface IUser<out TUserId> : IUser
     {
         /// <summary>
         /// User identifier
         /// </summary>
-        TKey Id { get; }
+        TUserId Id { get; }
     }
 
     /// <summary>

@@ -8,8 +8,7 @@ namespace Demo.App.Database.Entities
     public class Permission
     {
         public long Id { get; set; }
-        public long RoleId { get; set; }
-        public Role Role { get; set; }
+        public string RoleId { get; set; }
         public int PermissionId { get; set; }
         public int ResourceId { get; set; }
         public string InstanceId { get; set; }

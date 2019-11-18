@@ -14,15 +14,15 @@ namespace Pipaslot.Authorization.Tests
         [Test]
         public async Task GetRersourcePermissions()
         {
-            var roleId = 1;
+            var roleId = "1";
             var resourceCollection = new ResourceCollection();
             resourceCollection.Add<Perm1>(1);
             resourceCollection.Add<Perm2>(2);
-            var permissionStoreMock = new Mock<IPermissionStore<int>>();
+            var permissionStoreMock = new Mock<IPermissionStore>();
             permissionStoreMock.Setup(s => s.GetRoleStaticPermissionsAsync(roleId, CancellationToken.None))
                 .Returns(Task.FromResult(new Dictionary<ResourcePermissionKey, bool>()));
 
-            var service = new PermissionManager<int>(resourceCollection, permissionStoreMock.Object, new PermissionCache<int>(), new IResourceInstanceProvider[0]);
+            var service = new PermissionManager(resourceCollection, permissionStoreMock.Object, new PermissionCache(), new IResourceInstanceProvider[0]);
             var resources = await service.GetResourcePermissionsAsync(roleId);
 
             Assert.AreEqual(2, resources.Count);
@@ -32,7 +32,7 @@ namespace Pipaslot.Authorization.Tests
         [Test]
         public async Task GetResourceInstancePermissions()
         {
-            var roleId = 1;
+            var roleId = "1";
             var resourceId = 2;
             var permissions = new Dictionary<InstancePermissionKey, bool>()
             {
@@ -47,11 +47,11 @@ namespace Pipaslot.Authorization.Tests
             };
             var resourceCollection = new ResourceCollection();
             resourceCollection.Add<Perm1, FakeResourceInstanceProvider>(resourceId);
-            var permissionStoreMock = new Mock<IPermissionStore<int>>();
+            var permissionStoreMock = new Mock<IPermissionStore>();
             permissionStoreMock.Setup(s => s.GetRoleInstancePermissionsAsync(roleId,resourceId, CancellationToken.None))
                 .Returns(Task.FromResult(permissions));
             var providers = new[] {new FakeResourceInstanceProvider()};
-            var service = new PermissionManager<int>(resourceCollection, permissionStoreMock.Object, new PermissionCache<int>(), providers);
+            var service = new PermissionManager(resourceCollection, permissionStoreMock.Object, new PermissionCache(), providers);
             var resources = await service.GetResourceInstancePermissionsAsync(roleId, resourceId);
 
             Assert.AreEqual(3, resources.Count);

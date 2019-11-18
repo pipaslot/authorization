@@ -9,9 +9,9 @@ namespace Pipaslot.Authorization
     public class User<TKey> : IUser<TKey>
     {
         private readonly IIdentityProvider<TKey> _identityProvider;
-        private readonly IPermissionManager<TKey> _permissionManager;
+        private readonly IPermissionManager _permissionManager;
 
-        public User(IIdentityProvider<TKey> identityProvider, IPermissionManager<TKey> permissionManager)
+        public User(IIdentityProvider<TKey> identityProvider, IPermissionManager permissionManager)
         {
             _identityProvider = identityProvider;
             _permissionManager = permissionManager;
@@ -38,18 +38,28 @@ namespace Pipaslot.Authorization
         public bool IsAllowed(IConvertible permissionEnum)
         {
             var roles = GetRoles();
-            return roles.ContainsAdmin() || _permissionManager.IsAllowed(roles.GetIds<TKey>(), permissionEnum);
+            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles.Select(r => r.Id).ToArray(), permissionEnum);
         }
 
         public bool IsAllowed<TInstanceKey>(IConvertible permissionEnum, TInstanceKey instanceKey)
         {
             var roles = GetRoles();
-            return roles.ContainsAdmin() || _permissionManager.IsAllowed(roles.GetIds<TKey>(), permissionEnum, instanceKey);
+            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles.Select(r => r.Id).ToArray(), permissionEnum, instanceKey);
+        }
+        private bool ContainsAdmin(IEnumerable<IRole> roles)
+        {
+            var adminRole = GetSystemRoles()
+                .FirstOrDefault(r => r.Type == RoleType.Admin);
+            if (adminRole != null)
+            {
+                return roles.Any(r => r.Id == adminRole.Id);
+            }
+            return false;
         }
 
         public TKey Id => _identityProvider.GetUserId();
 
-        private  ICollection<IRole> GetRoles()
+        private ICollection<IRole> GetRoles()
         {
             //Load assigned not system user roles from claims
             var roles = _identityProvider.GetRoles();

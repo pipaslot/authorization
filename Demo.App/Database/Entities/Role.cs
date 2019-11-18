@@ -10,6 +10,5 @@ namespace Demo.App.Database.Entities
         public string Description { get; set; }
         public RoleType Type { get; set; }
         public List<UserRole> UserRoles { get; set; }
-        public List<Permission> Permissions { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using Pipaslot.Authorization.Models;
 
 namespace Demo.App.Database
 {
-    public class PermissionStore : IPermissionStore<long>
+    public class PermissionStore : IPermissionStore
     {
         private readonly DatabaseFactory _databaseFactory;
 
@@ -20,12 +20,12 @@ namespace Demo.App.Database
             _databaseFactory = databaseFactory;
         }
 
-        public bool? IsAllowed(long roleId, ResourcePermissionKey permissionUid, string instanceId)
+        public bool? IsAllowed(string roleId, ResourcePermissionKey permissionUid, string instanceId)
         {
             return IsAllowed(new[] { roleId }, permissionUid, instanceId);
         }
 
-        public bool? IsAllowed(ICollection<long> roleIds, ResourcePermissionKey permissionUid, string instanceId)
+        public bool? IsAllowed(ICollection<string> roleIds, ResourcePermissionKey permissionUid, string instanceId)
         {
             using (var db = _databaseFactory.Create())
             {
@@ -37,7 +37,7 @@ namespace Demo.App.Database
             }
         }
 
-        public async Task SetPermissionAsync(long role, int resourceId, int permissionId, string instanceId, bool? isAllowed, CancellationToken token = default)
+        public async Task SetPermissionAsync(string role, int resourceId, int permissionId, string instanceId, bool? isAllowed, CancellationToken token = default)
         {
             using (var db = _databaseFactory.Create())
             {
@@ -76,7 +76,7 @@ namespace Demo.App.Database
             }
         }
 
-        public async Task<Dictionary<ResourcePermissionKey, bool>> GetRoleStaticPermissionsAsync(long roleId, CancellationToken token = default)
+        public async Task<Dictionary<ResourcePermissionKey, bool>> GetRoleStaticPermissionsAsync(string roleId, CancellationToken token = default)
         {
             using (var db = _databaseFactory.Create())
             {
@@ -91,7 +91,7 @@ namespace Demo.App.Database
             }
         }
 
-        public async Task<Dictionary<InstancePermissionKey, bool>> GetRoleInstancePermissionsAsync(long roleId, int resourceId, CancellationToken token = default)
+        public async Task<Dictionary<InstancePermissionKey, bool>> GetRoleInstancePermissionsAsync(string roleId, int resourceId, CancellationToken token = default)
         {
             using (var db = _databaseFactory.Create())
             {
@@ -117,7 +117,7 @@ namespace Demo.App.Database
             {
                 var roles = db.Role.Select(r => (IRoleDetail)new RoleDto
                 {
-                    Id = r.Id,
+                    Id = r.Id.ToString(),
                     Name = r.Name,
                     Description = r.Description,
                     Type = r.Type
@@ -134,7 +134,7 @@ namespace Demo.App.Database
                     .Where(r => r.Type == RoleType.Guest || r.Type == RoleType.User || r.Type == RoleType.Admin)
                     .Select(r => (IRole)new RoleDto
                     {
-                        Id = r.Id,
+                        Id = r.Id.ToString(),
                         Name = r.Name,
                         Description = r.Description,
                         Type = r.Type

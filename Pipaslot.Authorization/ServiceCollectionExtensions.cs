@@ -7,23 +7,23 @@ namespace Pipaslot.Authorization
     {
         public static IServiceCollection AddPermissions<TKey, TPermissionStore, TIdentityProvider>(this IServiceCollection services)
             where TIdentityProvider : class, IIdentityProvider<TKey>
-            where TPermissionStore : class, IPermissionStore<TKey>
+            where TPermissionStore : class, IPermissionStore
         {
             return services.AddPermissions<TKey, User<TKey>, TPermissionStore, TIdentityProvider>();
         }
 
         public static IServiceCollection AddPermissions<TKey, TUser, TPermissionStore, TIdentityProvider>(this IServiceCollection services)
             where TUser : class, IUser<TKey>
-            where TPermissionStore : class, IPermissionStore<TKey>
+            where TPermissionStore : class, IPermissionStore
             where TIdentityProvider : class, IIdentityProvider<TKey>
         {
             services.AddSingleton<ResourceCollection>();
-            services.AddSingleton<PermissionCache<TKey>>();
+            services.AddSingleton<PermissionCache>();
             services.AddScoped<TUser>();
             services.AddScoped<IUser, TUser>();
             services.AddScoped<IUser<TKey>, TUser>();
-            services.AddScoped<IPermissionStore<TKey>, TPermissionStore>();
-            services.AddScoped<IPermissionManager<TKey>, PermissionManager<TKey>>();
+            services.AddScoped<IPermissionStore, TPermissionStore>();
+            services.AddScoped<IPermissionManager, PermissionManager>();
             services.AddSingleton<IIdentityProvider<TKey>, TIdentityProvider>();
             return services;
         }

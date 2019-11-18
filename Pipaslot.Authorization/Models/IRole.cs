@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Pipaslot.Authorization.Models
+﻿namespace Pipaslot.Authorization.Models
 {
     public interface IRoleDetail : IRole
     {
@@ -19,10 +15,10 @@ namespace Pipaslot.Authorization.Models
 
     public interface IRole
     {
-        object Id { get; set; }
+        string Id { get; set; }
 
         /// <summary>
-        /// Specificate role type 
+        /// Specify role type 
         /// </summary>
         RoleType Type { get; }
     }

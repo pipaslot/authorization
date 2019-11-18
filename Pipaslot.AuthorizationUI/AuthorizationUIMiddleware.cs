@@ -5,7 +5,7 @@ using Pipaslot.Authorization;
 
 namespace Pipaslot.AuthorizationUI
 {
-    public class AuthorizationUIMiddleware<TKey>
+    public class AuthorizationUIMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly AuthorizationUIOptions _options;
@@ -22,8 +22,8 @@ namespace Pipaslot.AuthorizationUI
             {
                 try
                 {
-                    var user = (IUser<TKey>) services.GetService(typeof(IUser<TKey>));
-                    var router = new Router<TKey>(context.Request, _options.RoutePrefix, user);
+                    var user = (IUser) services.GetService(typeof(IUser));
+                    var router = new Router(context.Request, _options.RoutePrefix, user);
                     var action = router.ResolveAction();
                     await action.ExecuteAsync(context, services);
                 }

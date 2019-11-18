@@ -7,14 +7,14 @@ using Pipaslot.AuthorizationUI.ActionAbstraction;
 
 namespace Pipaslot.AuthorizationUI.Actions
 {
-    class RoleJsonAction<TKey> : AJsonAction
+    class RoleJsonAction : AJsonAction
     {
         protected override object GetData(HttpContext context, IServiceProvider services)
         {
-            var store = (IPermissionManager<TKey>)services.GetService(typeof(IPermissionManager<TKey>));
+            var store = (IPermissionManager)services.GetService(typeof(IPermissionManager));
             if (store == null)
             {
-                throw new ApplicationException($"Can not resolve service {typeof(IPermissionManager<TKey>)} from Dependency Injection.");
+                throw new ApplicationException($"Can not resolve service {typeof(IPermissionManager)} from Dependency Injection.");
             }
             var result = new List<object>();
             foreach (var role in store.GetAllRoles())
