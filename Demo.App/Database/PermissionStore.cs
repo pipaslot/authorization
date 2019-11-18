@@ -111,11 +111,11 @@ namespace Demo.App.Database
             }
         }
 
-        public ICollection<IRole> GetAllRoles()
+        public ICollection<IRoleDetail> GetAllRoles()
         {
             using (var db = _databaseFactory.Create())
             {
-                var roles = db.Role.Select(r => (IRole)new RoleDto
+                var roles = db.Role.Select(r => (IRoleDetail)new RoleDto
                 {
                     Id = r.Id,
                     Name = r.Name,

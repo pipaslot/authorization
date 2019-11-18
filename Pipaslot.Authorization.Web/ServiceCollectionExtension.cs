@@ -10,11 +10,13 @@ namespace Pipaslot.Authorization.Web
         /// <typeparam name="TPermissionStore">Database layer for permissions</typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPermissions<TKey,TPermissionStore>(this IServiceCollection services)
+        public static IServiceCollection AddPermissions<TKey, TPermissionStore>(this IServiceCollection services)
             where TPermissionStore : class, IPermissionStore<TKey>
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            return services.AddPermissions<TKey, TPermissionStore, ClaimsPrincipalProvider>();
+            services.AddPermissions<TKey, TPermissionStore, IdentityProvider<TKey>>();
+
+            return services;
         }
     }
 }

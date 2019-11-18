@@ -76,7 +76,7 @@ namespace Pipaslot.Authorization
             await _permissionStore.SetPermissionAsync(role, resourceId, permissionId, instanceId, isEnabled);
         }
 
-        public ICollection<IRole> GetAllRoles()
+        public ICollection<IRoleDetail> GetAllRoles()
         {
             return _permissionStore.GetAllRoles();
         }

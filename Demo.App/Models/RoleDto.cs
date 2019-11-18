@@ -6,7 +6,7 @@ using Pipaslot.Authorization.Models;
 
 namespace Demo.App.Models
 {
-    public class RoleDto : IRole
+    public class RoleDto : IRoleDetail
     {
         public object Id { get; set; }
         public string Name { get; set; }

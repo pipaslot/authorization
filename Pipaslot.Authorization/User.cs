@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using Pipaslot.Authorization.Models;
 
 namespace Pipaslot.Authorization
@@ -9,16 +8,16 @@ namespace Pipaslot.Authorization
     /// <inheritDoc />
     public class User<TKey> : IUser<TKey>
     {
-        private readonly IClaimsPrincipalProvider _claimsPrincipalProvider;
+        private readonly IIdentityProvider<TKey> _identityProvider;
         private readonly IPermissionManager<TKey> _permissionManager;
 
-        public User(IClaimsPrincipalProvider claimsPrincipalProvider, IPermissionManager<TKey> permissionManager)
+        public User(IIdentityProvider<TKey> identityProvider, IPermissionManager<TKey> permissionManager)
         {
-            _claimsPrincipalProvider = claimsPrincipalProvider;
+            _identityProvider = identityProvider;
             _permissionManager = permissionManager;
         }
 
-        public bool IsAuthenticated => _claimsPrincipalProvider.GetClaimsPrincipal().Identity.IsAuthenticated;
+        public bool IsAuthenticated => _identityProvider.IsAuthenticated;
 
         public void CheckPermission(IConvertible permissionEnum)
         {
@@ -38,56 +37,32 @@ namespace Pipaslot.Authorization
 
         public bool IsAllowed(IConvertible permissionEnum)
         {
-            var identity = GetIdentity();
-            return identity.Roles.ContainsAdmin() || _permissionManager.IsAllowed(identity.Roles.GetIds<TKey>(), permissionEnum);
+            var roles = GetRoles();
+            return roles.ContainsAdmin() || _permissionManager.IsAllowed(roles.GetIds<TKey>(), permissionEnum);
         }
 
         public bool IsAllowed<TInstanceKey>(IConvertible permissionEnum, TInstanceKey instanceKey)
         {
-            var identity = GetIdentity();
-            return identity.Roles.ContainsAdmin() || _permissionManager.IsAllowed(identity.Roles.GetIds<TKey>(), permissionEnum, instanceKey);
+            var roles = GetRoles();
+            return roles.ContainsAdmin() || _permissionManager.IsAllowed(roles.GetIds<TKey>(), permissionEnum, instanceKey);
         }
-        
-        public TKey Id => GetIdentity().Id;
 
-        private (TKey Id, IEnumerable<IRole> Roles) GetIdentity()
+        public TKey Id => _identityProvider.GetUserId();
+
+        private  ICollection<IRole> GetRoles()
         {
-            var user = _claimsPrincipalProvider.GetClaimsPrincipal();
-            var roleClaims = user.FindAll(ClaimTypes.Role);
             //Load assigned not system user roles from claims
-            var roles = roleClaims.Select(_claimsPrincipalProvider.ClaimToRole).ToList();
+            var roles = _identityProvider.GetRoles();
             var systemRoles = GetSystemRoles();
             //Auto assign guest role
             roles.Add(systemRoles.First(r => r.Type == RoleType.Guest));
-            var name = user.Identity?.Name;
             //If username is not empty, add User role
-            if (!string.IsNullOrWhiteSpace(name))
+            if (_identityProvider.IsAuthenticated)
             {
                 roles.Add(systemRoles.First(r => r.Type == RoleType.User));
             }
-            if (typeof(TKey) == typeof(int))
-            {
-                foreach (var role in roles)
-                {
-                    role.Id = ParseIntFromString(role.Id?.ToString(), "User ID");
-                }
-                return (Id: ParseIntFromString(name, "Role ID"), Roles: roles);
-            }
-            if (typeof(TKey) == typeof(long))
-            {
-                foreach (var role in roles)
-                {
-                    role.Id = ParseLongFromString(role.Id?.ToString(), "User ID");
-                }
-                return (Id: ParseLongFromString(name, "Role ID"), Roles: roles);
-            }
-            if (typeof(TKey) == typeof(string))
-            {
-                return (Id: (TKey)(object)name, Roles: roles);
-            }
-            throw new NotSupportedException($"Generic attribute TKey of type {typeof(TKey)} is not supported. Only int, long and string can be used");
+            return roles;
         }
-
 
         /// <summary>
         /// System role cache
@@ -105,31 +80,6 @@ namespace Pipaslot.Authorization
             }
 
             return _systemRolesCache;
-        }
-
-        private TKey ParseIntFromString(string value, string field)
-        {
-            try
-            {
-                return string.IsNullOrWhiteSpace(value) ? default : (TKey)(object)int.Parse(value);
-            }
-            catch (FormatException)
-            {
-                throw new ArgumentOutOfRangeException($"{field}: Expected integer value but got '{value}'");
-            }
-        }
-
-
-        private TKey ParseLongFromString(string value, string field)
-        {
-            try
-            {
-                return string.IsNullOrWhiteSpace(value) ? default : (TKey)(object)long.Parse(value);
-            }
-            catch (FormatException)
-            {
-                throw new ArgumentOutOfRangeException($"{field}: Expected long value but got '{value}'");
-            }
         }
     }
 }

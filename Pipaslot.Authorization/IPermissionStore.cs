@@ -44,7 +44,7 @@ namespace Pipaslot.Authorization
         /// <summary>
         /// Returns all roles
         /// </summary>
-        ICollection<IRole> GetAllRoles();
+        ICollection<IRoleDetail> GetAllRoles();
 
         /// <summary>
         /// Returns all roles with type to be Guest, User or Admin

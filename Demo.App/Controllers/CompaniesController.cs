@@ -22,9 +22,9 @@ namespace Demo.App.Controllers
         private readonly IUser<long> _user;
         private readonly IOptions<JwtTokenOptions> _jwtOptions;
         private readonly CompanyRepository _companyRepository;
-        private readonly IClaimsPrincipalProvider _claimsProvider;
+        private readonly WindowsIdentityProvider _claimsProvider;
 
-        public CompaniesController(IUser<long> user, IOptions<JwtTokenOptions> jwtOptions, CompanyRepository companyRepository, IClaimsPrincipalProvider claimsProvider)
+        public CompaniesController(IUser<long> user, IOptions<JwtTokenOptions> jwtOptions, CompanyRepository companyRepository, WindowsIdentityProvider claimsProvider)
         {
             _user = user;
             _jwtOptions = jwtOptions;
@@ -41,6 +41,7 @@ namespace Demo.App.Controllers
                 Name = "Admin",
                 Type = RoleType.Admin
             };
+            var id = _user.Id;
             return CreateNewToken(1, role);
         }
 

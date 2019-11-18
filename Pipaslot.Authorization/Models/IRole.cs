@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Pipaslot.Authorization.Models
 {
-    public interface IRole
+    public interface IRoleDetail : IRole
     {
-        object Id { get; set; }
-
         /// <summary>
         /// Role name
         /// </summary>
@@ -17,6 +15,11 @@ namespace Pipaslot.Authorization.Models
         /// Role description
         /// </summary>
         string Description { get; }
+    }
+
+    public interface IRole
+    {
+        object Id { get; set; }
 
         /// <summary>
         /// Specificate role type 

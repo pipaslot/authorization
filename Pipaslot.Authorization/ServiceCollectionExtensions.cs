@@ -5,17 +5,17 @@ namespace Pipaslot.Authorization
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddPermissions<TKey, TPermissionStore, TClaimsPrincipalProvider>(this IServiceCollection services)
-            where TClaimsPrincipalProvider : class, IClaimsPrincipalProvider
+        public static IServiceCollection AddPermissions<TKey, TPermissionStore, TIdentityProvider>(this IServiceCollection services)
+            where TIdentityProvider : class, IIdentityProvider<TKey>
             where TPermissionStore : class, IPermissionStore<TKey>
         {
-            return services.AddPermissions<TKey, User<TKey>, TPermissionStore, TClaimsPrincipalProvider>();
+            return services.AddPermissions<TKey, User<TKey>, TPermissionStore, TIdentityProvider>();
         }
 
-        public static IServiceCollection AddPermissions<TKey, TUser, TPermissionStore, TClaimsPrincipalProvider>(this IServiceCollection services)
+        public static IServiceCollection AddPermissions<TKey, TUser, TPermissionStore, TIdentityProvider>(this IServiceCollection services)
             where TUser : class, IUser<TKey>
             where TPermissionStore : class, IPermissionStore<TKey>
-            where TClaimsPrincipalProvider : class, IClaimsPrincipalProvider
+            where TIdentityProvider : class, IIdentityProvider<TKey>
         {
             services.AddSingleton<ResourceCollection>();
             services.AddSingleton<PermissionCache<TKey>>();
@@ -24,7 +24,7 @@ namespace Pipaslot.Authorization
             services.AddScoped<IUser<TKey>, TUser>();
             services.AddScoped<IPermissionStore<TKey>, TPermissionStore>();
             services.AddScoped<IPermissionManager<TKey>, PermissionManager<TKey>>();
-            services.AddSingleton<IClaimsPrincipalProvider, TClaimsPrincipalProvider>();
+            services.AddSingleton<IIdentityProvider<TKey>, TIdentityProvider>();
             return services;
         }
 
