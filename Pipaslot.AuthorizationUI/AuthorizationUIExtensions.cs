@@ -15,10 +15,10 @@ namespace Pipaslot.AuthorizationUI
             return builder.UseMiddleware<AuthorizationUIMiddleware>(options);
         }
 
-        public static IServiceCollection AddAuthorizationUI<TKey, TPermissionStore>(this IServiceCollection services, int resourceUniqueId)
+        public static IServiceCollection AddAuthorizationUI<TUserId, TPermissionStore>(this IServiceCollection services, int resourceUniqueId)
             where TPermissionStore : class, IPermissionStore
         {
-            services.AddPermissions<TKey, TPermissionStore>();
+            services.AddPermissions<TUserId, TPermissionStore>();
             services.AddPermissionResource<AuthorizationUIPermissions>(resourceUniqueId);
             return services;
         }

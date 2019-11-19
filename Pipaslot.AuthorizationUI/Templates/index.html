@@ -115,11 +115,11 @@
 <script type="text/javascript">
     var data = {
         authentication: "{{authenticationToken}}",
-        isAuthenticated: false,
+        isAuthenticated: "{{isAuthenticated}}" == "true",
         roles: [],
         activeRole: null,
         resources: []
-    }
+    };
     var getRequest = function (path, onSuccess) {
         $.ajax({
             url: "{{routePrefix}}/" + path,
@@ -149,12 +149,15 @@
                 data.activeRole = null;
                 data.resources = [];
                 if (data.authentication) {
-                    getRequest("api/roles",
-                        function (response) {
-                            data.isAuthenticated = true;
-                            data.roles = response;
-                        });
+                    this.loadRoles()
                 }
+            },
+            loadRoles: function() {
+                getRequest("api/roles",
+                    function (response) {
+                        data.isAuthenticated = true;
+                        data.roles = response;
+                    });
             },
             selectRole: function (role) {
                 data.activeRole = role;
@@ -220,5 +223,7 @@
 
     if (app.authentication) {
         app.authenticate();
+    } else if (app.isAuthenticated) {
+        app.loadRoles()
     }
 </script>

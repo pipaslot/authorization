@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -29,9 +30,13 @@ namespace Pipaslot.AuthorizationUI.ActionAbstraction
             {
                 token = tokenValue.ToString();
             }
+            
+            var isWindows = context.User is WindowsPrincipal;
+            var isAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
             var html = layout
                 .Replace("{{pageBody}}", body)
                 .Replace("{{routePrefix}}",RoutePrefix)
+                .Replace("{{isAuthenticated}}",isWindows && isAuthenticated ? "true": "false")
                 .Replace("{{authenticationToken}}",token);
             foreach (var parameter in _templateParameters)
             {

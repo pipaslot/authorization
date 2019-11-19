@@ -13,6 +13,6 @@ namespace Pipaslot.Authorization
 
         bool IsAuthenticated { get; }
 
-        List<IRole> GetRoles();
+        List<string> GetRoles();
     }
 }

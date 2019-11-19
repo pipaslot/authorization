@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Pipaslot.Authorization;
-using Pipaslot.Authorization.Models;
 
 namespace Demo.App.Controllers
 {
@@ -22,47 +21,32 @@ namespace Demo.App.Controllers
         private readonly IUser<long> _user;
         private readonly IOptions<JwtTokenOptions> _jwtOptions;
         private readonly CompanyRepository _companyRepository;
-        private readonly WindowsIdentityProvider _claimsProvider;
 
-        public CompaniesController(IUser<long> user, IOptions<JwtTokenOptions> jwtOptions, CompanyRepository companyRepository, WindowsIdentityProvider claimsProvider)
+        public CompaniesController(IUser<long> user, IOptions<JwtTokenOptions> jwtOptions, CompanyRepository companyRepository)
         {
             _user = user;
             _jwtOptions = jwtOptions;
             _companyRepository = companyRepository;
-            _claimsProvider = claimsProvider;
         }
 
         [HttpGet("login-admin")]
         public string LoginAdmin()
         {
-            var role = new TokenRole
-            {
-                Id = "1",
-                Name = "Admin",
-                Type = RoleType.Admin
-            };
-            var id = _user.Id;
-            return CreateNewToken(1, role);
+            return CreateNewToken(1, "3");
         }
 
         [HttpGet("login-user")]
         public string LoginUser()
         {
-            var role = new TokenRole
-            {
-                Id = "2",
-                Name = "User",
-                Type = RoleType.User,
-            };
-            return CreateNewToken(1, role);
+            return CreateNewToken(1, "2");
         }
 
-        private string CreateNewToken(long userId, TokenRole role)
+        private string CreateNewToken(long userId, string role)
         {
             var config = _jwtOptions.Value;
             var claims = new List<Claim>
             {
-                _claimsProvider.RoleToClaim(role),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString())
             };
 
@@ -80,15 +64,7 @@ namespace Demo.App.Controllers
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
             return "Bearer " + tokenValue;
         }
-
-        private class TokenRole : IRole
-        {
-            public string Id { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public RoleType Type { get; set; }
-        }
-
+        
         [HttpGet]
         public async Task<ICollection<Company>> GetAllCompanies()
         {

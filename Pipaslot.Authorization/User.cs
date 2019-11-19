@@ -38,40 +38,54 @@ namespace Pipaslot.Authorization
         public bool IsAllowed(IConvertible permissionEnum)
         {
             var roles = GetRoles();
-            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles.Select(r => r.Id).ToArray(), permissionEnum);
+            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles, permissionEnum);
         }
 
         public bool IsAllowed<TInstanceKey>(IConvertible permissionEnum, TInstanceKey instanceKey)
         {
             var roles = GetRoles();
-            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles.Select(r => r.Id).ToArray(), permissionEnum, instanceKey);
+            return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles, permissionEnum, instanceKey);
         }
-        private bool ContainsAdmin(IEnumerable<IRole> roles)
+        private bool ContainsAdmin(IEnumerable<string> roles)
         {
-            var adminRole = GetSystemRoles()
-                .FirstOrDefault(r => r.Type == RoleType.Admin);
-            if (adminRole != null)
+            if (TryGetSystemRole(RoleType.Admin, out var roleAdmin))
             {
-                return roles.Any(r => r.Id == adminRole.Id);
+                return roles.Any(r => r == roleAdmin);
             }
             return false;
         }
 
         public TKey Id => _identityProvider.GetUserId();
 
-        private ICollection<IRole> GetRoles()
+        private ICollection<string> GetRoles()
         {
             //Load assigned not system user roles from claims
             var roles = _identityProvider.GetRoles();
-            var systemRoles = GetSystemRoles();
-            //Auto assign guest role
-            roles.Add(systemRoles.First(r => r.Type == RoleType.Guest));
+            if (TryGetSystemRole(RoleType.Guest, out var roleGuest))
+            {
+                roles.Add(roleGuest);
+            }
             //If username is not empty, add User role
             if (_identityProvider.IsAuthenticated)
             {
-                roles.Add(systemRoles.First(r => r.Type == RoleType.User));
+                if (TryGetSystemRole(RoleType.User, out var roleUser))
+                {
+                    roles.Add(roleUser);
+                }
             }
             return roles;
+        }
+        
+        private bool TryGetSystemRole(RoleType type, out string roleId)
+        {
+            var role = GetSystemRoles().FirstOrDefault(r => r.Type == type);
+            roleId = null;
+            if (role != null)
+            {
+                roleId = role.Id;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
