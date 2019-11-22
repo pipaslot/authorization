@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETSTANDARD2_0
+using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Pipaslot.Authorization
@@ -54,3 +55,4 @@ namespace Pipaslot.Authorization
         }
     }
 }
+#endif
