@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Pipaslot.Authorization.Models;
 
 namespace Pipaslot.Authorization
 {
@@ -9,10 +8,21 @@ namespace Pipaslot.Authorization
     /// </summary>
     public interface IIdentityProvider<out TUserId>
     {
+        /// <summary>
+        /// Provide user id which can be used as unique identifier
+        /// </summary>
+        /// <returns></returns>
         TUserId GetUserId();
 
+        /// <summary>
+        /// User is authenticated
+        /// </summary>
         bool IsAuthenticated { get; }
 
+        /// <summary>
+        /// Return all user's custom roles
+        /// </summary>
+        /// <returns></returns>
         List<string> GetRoles();
     }
 }

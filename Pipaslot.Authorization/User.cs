@@ -37,12 +37,20 @@ namespace Pipaslot.Authorization
 
         public bool IsAllowed(IConvertible permissionEnum)
         {
+            if (permissionEnum == null)
+            {
+                throw new ArgumentException("Permission can not be null");
+            }
             var roles = GetRoles();
             return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles, permissionEnum);
         }
 
         public bool IsAllowed<TInstanceKey>(IConvertible permissionEnum, TInstanceKey instanceKey)
         {
+            if (permissionEnum == null)
+            {
+                throw new ArgumentException("Permission can not be null");
+            }
             var roles = GetRoles();
             return ContainsAdmin(roles) || _permissionManager.IsAllowed(roles, permissionEnum, instanceKey);
         }
@@ -60,7 +68,7 @@ namespace Pipaslot.Authorization
         private ICollection<string> GetRoles()
         {
             //Load assigned not system user roles from claims
-            var roles = _identityProvider.GetRoles();
+            var roles = _identityProvider.GetRoles() ?? new List<string>();
             if (TryGetSystemRole(RoleType.Guest, out var roleGuest))
             {
                 roles.Add(roleGuest);
@@ -73,7 +81,9 @@ namespace Pipaslot.Authorization
                     roles.Add(roleUser);
                 }
             }
-            return roles;
+            return roles
+                .Distinct()
+                .ToList();
         }
         
         private bool TryGetSystemRole(RoleType type, out string roleId)
@@ -103,7 +113,7 @@ namespace Pipaslot.Authorization
                 _systemRolesCache = _permissionManager.GetSystemRoles();
             }
 
-            return _systemRolesCache;
+            return _systemRolesCache ?? new IRole[0];
         }
     }
 }

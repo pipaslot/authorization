@@ -2,6 +2,7 @@
 
 namespace Pipaslot.Authorization
 {
+    /// <inheritdoc/>
     public interface IUser<out TUserId> : IUser
     {
         /// <summary>
@@ -11,7 +12,7 @@ namespace Pipaslot.Authorization
     }
 
     /// <summary>
-    /// Singleton service providing user authorization operations
+    /// Singleton service providing user authorization operations and collects his roles
     /// </summary>
     public interface IUser
     {
