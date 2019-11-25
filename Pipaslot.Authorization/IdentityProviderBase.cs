@@ -15,44 +15,68 @@ namespace Pipaslot.Authorization
         public TUserId GetUserId()
         {
             var user = GetClaimPrincipal();
+
+            var identityClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (identityClaim != null)
+            {
+                if (TryConvertId(identityClaim.Value, out var id))
+                {
+                    return id;
+                }
+            }
             var name = user.Identity?.Name;
             if (user.Identity is WindowsIdentity)
             {
                 return WindowsUserNameToId(name);
             }
-            if (name is TUserId targetValue)
+
+            if (TryConvertId(name, out var id2))
             {
-                return targetValue;
-            }
-            if (typeof(TUserId) == typeof(int))
-            {
-                return ParseIntFromString(name, "Role ID");
-            }
-            if (typeof(TUserId) == typeof(long))
-            {
-                return ParseLongFromString(name, "Role ID");
+                return id2;
             }
             throw new NotSupportedException($"Generic attribute TKey of type {typeof(TUserId)} is not supported. Only int, long and string can be used");
         }
 
-        protected TUserId ParseIntFromString(string value, string field)
+        protected bool TryConvertId(string stringId, out TUserId value)
+        {
+            value = default;
+            if (stringId is TUserId targetValue)
+            {
+                value = targetValue;
+                return true;
+            }
+            if (typeof(TUserId) == typeof(int))
+            {
+                value = ParseIntFromString(stringId);
+                return true;
+            }
+            if (typeof(TUserId) == typeof(long))
+            {
+                value = ParseLongFromString(stringId);
+                return true;
+            }
+
+            return false;
+        }
+
+        private TUserId ParseIntFromString(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return default;
             if (int.TryParse(value, out var result))
             {
                 return (TUserId)(object)result;
             }
-            throw new ArgumentOutOfRangeException($"{field}: Expected integer value but got '{value}'");
+            throw new ArgumentOutOfRangeException($"User ID: Expected integer value but got '{value}'");
         }
 
-        protected TUserId ParseLongFromString(string value, string field)
+        private TUserId ParseLongFromString(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return default;
             if (long.TryParse(value, out var result))
             {
                 return (TUserId)(object)result;
             }
-            throw new ArgumentOutOfRangeException($"{field}: Expected long value but got '{value}'");
+            throw new ArgumentOutOfRangeException($"User ID: Expected long value but got '{value}'");
         }
 
         public bool IsAuthenticated => GetClaimPrincipal().Identity.IsAuthenticated;

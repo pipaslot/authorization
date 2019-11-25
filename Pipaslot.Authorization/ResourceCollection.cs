@@ -62,13 +62,6 @@ namespace Pipaslot.Authorization
                 throw new Exception(
                     $"Resource for enum {definition.PermissionEnumType} with ID {definition.ResourceId} is in collision with {rangeCollision.PermissionEnumType} containing the same resource ID");
             }
-
-            var rangeCollision2 = _resources.FirstOrDefault(r => r.PermissionEnumType == definition.PermissionEnumType);
-            if (rangeCollision2 != null)
-            {
-                throw new Exception(
-                    $"Resource for enum {definition.PermissionEnumType} is already registered");
-            }
         }
 
         private void CheckDuplicateKeys(Type definitionPermissionEnumType)

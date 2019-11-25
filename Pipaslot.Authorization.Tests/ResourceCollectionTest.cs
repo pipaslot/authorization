@@ -37,6 +37,55 @@ namespace Pipaslot.Authorization.Tests
             Assert.Throws<Exception>(() => { collection.Add<PermWitDuplicates>(1); });
         }
 
+        [Test]
+        public void Constructor_AddTwo_Pass()
+        {
+            var collection = new ResourceCollection(new[]
+            {
+                new ResourceDefinition(typeof(Perm1),0),
+                new ResourceDefinition(typeof(Perm2),1)
+            });
+            Assert.AreEqual(2, collection.Count);
+        }
+
+        [Test]
+        public void Constructor_TheSameResourceId_ThrowException()
+        {
+            Assert.Throws<Exception>(() =>
+            {
+                new ResourceCollection(new[]
+                {
+                    new ResourceDefinition(typeof(Perm1),1),
+                    new ResourceDefinition(typeof(Perm2),1)
+                });
+            });
+        }
+
+        [Test]
+        public void Constructor_TheSameEnumType_ThrowException()
+        {
+            Assert.Throws<Exception>(() =>
+            {
+                new ResourceCollection(new[]
+                {
+                    new ResourceDefinition(typeof(Perm1),0),
+                    new ResourceDefinition(typeof(Perm1),1)
+                });
+            });
+        }
+
+        [Test]
+        public void Constructor_WithDuplicateKeys_ThrowException()
+        {
+            Assert.Throws<Exception>(() =>
+            {
+                new ResourceCollection(new[]
+                {
+                    new ResourceDefinition(typeof(PermWitDuplicates),1)
+                });
+            });
+        }
+
         private enum Perm1
         {
             DoIt=10
