@@ -7,25 +7,25 @@ namespace Pipaslot.Authorization
 {
     public class PermissionCache
     {
-        private readonly List<RoleList> _roleLists = new List<RoleList>();
+        private readonly Dictionary<string,RoleList> _roleCollection = new Dictionary<string,RoleList>();
 
-        public bool? Load(Func<bool?> callback, IEnumerable<string> roleIds, ResourcePermissionKey permissionUid, string instanceId)
+        public bool? Load(Func<bool?> callback, ICollection<string> roleIds, ResourcePermissionKey permissionUid, string instanceId)
         {
-            var newRoles = new RoleList(roleIds);
+            var sortedIds = roleIds.OrderBy(i => i).ToList();
+            var key = string.Join("|#|", sortedIds);
+
             //Find or create roles
-            var existingRoles = _roleLists.FirstOrDefault(r => r.Key == newRoles.Key);
-            if (existingRoles == null)
+            if(!_roleCollection.TryGetValue(key, out var roleList))
             {
-                _roleLists.Add(newRoles);
-                existingRoles = newRoles;
+                _roleCollection[key] = roleList = new RoleList(sortedIds);
             }
             //Find or create permission
-            var existingPermission = existingRoles.Permissions.FirstOrDefault(p => p.Uid == permissionUid && p.InstanceId == instanceId);
+            var existingPermission = roleList.Permissions.FirstOrDefault(p => p.Uid == permissionUid && p.InstanceId == instanceId);
             if (existingPermission == null)
             {
                 var isAllowed = callback();
                 existingPermission = new Permission(permissionUid, instanceId, isAllowed);
-                existingRoles.Permissions.Add(existingPermission);
+                roleList.Permissions.Add(existingPermission);
             }
             return existingPermission.IsAllowed;
         }
@@ -35,26 +35,24 @@ namespace Pipaslot.Authorization
         /// </summary>
         public void Clear(string roleId, ResourcePermissionKey permissionUid)
         {
-            var roleLists = _roleLists.Where(r => r.Ids.Contains(roleId));
+            var roleLists = _roleCollection.Values.Where(r => r.Ids.Contains(roleId));
             foreach (var roleList in roleLists)
             {
                 roleList.Permissions.RemoveAll(p => p.Uid == permissionUid);
             }
         }
 
-        internal class RoleList
+        private class RoleList
         {
-            public string Key { get; }
-            public List<string> Ids { get; }
+            public ICollection<string> Ids { get; }
             public List<Permission> Permissions { get; } = new List<Permission>();
 
-            public RoleList(IEnumerable<string> ids)
+            public RoleList(ICollection<string> ids)
             {
-                Ids = ids.OrderBy(i => i).ToList();
-                Key = string.Join("|#|", Ids);
+                Ids = ids;
             }
         }
-        internal class Permission
+        private class Permission
         {
             public ResourcePermissionKey Uid { get; }
             public string InstanceId { get; }
