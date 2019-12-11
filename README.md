@@ -29,8 +29,8 @@ services.AddPermissionResource<CompanyPermission>(1);
 ```
 
 #### Configure with authentication
-To make authentication and authorization working together you will have to implement IClaimPrincipalProvider. 
-If you are using web application, it just need to access ClaimPrincipal available from IHttpContextAcessor. 
+To make authentication and authorization working together you will have to implement IIdentityProvider. 
+If you are using web application, it just need to access ClaimPrincipal available from IHttpContextAccessor. 
 Then use method RoleToClaim when you will be adding roles to user identity.
 
 ### Use in application
