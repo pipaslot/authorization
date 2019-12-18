@@ -18,7 +18,7 @@ public enum CompanyPermission
 Advice: Always specify numeric representation because it will be used as key in your data storage
 
 ### Register services for Dependency Injection
-Specify your primary key type and implement IPermissionStore for data persistence. 
+Specify your primary key type and implement IPermissionStore for data persistence. If you are using Windows Authentication, then primary key will be string.
 ```
 services.AddPermissions<long, AppPermissionStore>();
 ```
@@ -40,6 +40,9 @@ _user.IsAllowed(CompanyPermission.Create);
 // OR
 _user.CheckPermission(CompanyPermission.Create);
 ```
+
+#### User ID providing
+Let inject in your service generic implementation IUser<long> instead of IUser. The long is the same primary key configured in IServiceCollection.
 
 ## Specify permission for different data(enities)
 Lets define company permission for CRUD operations.
@@ -89,4 +92,5 @@ app.UseAuthorizationUI<long>(options =>
        options.RoutePrefix = "security";
    });
 ```
-then UI will be available on address http://my.domain/security
+then UI will be available on address http://my.domain/security . Or you can use IPermissionManager methods for implementation of your own UI.
+
