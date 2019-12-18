@@ -12,7 +12,7 @@ namespace Pipaslot.Authorization
 
         protected abstract TUserId WindowsUserNameToId(string name);
 
-        public TUserId GetUserId()
+        public virtual TUserId GetUserId()
         {
             var user = GetClaimPrincipal();
 
@@ -37,7 +37,7 @@ namespace Pipaslot.Authorization
             throw new NotSupportedException($"Generic attribute TKey of type {typeof(TUserId)} is not supported. Only int, long and string can be used");
         }
 
-        protected bool TryConvertId(string stringId, out TUserId value)
+        protected virtual bool TryConvertId(string stringId, out TUserId value)
         {
             value = default;
             if (stringId is TUserId targetValue)
@@ -79,9 +79,9 @@ namespace Pipaslot.Authorization
             throw new ArgumentOutOfRangeException($"User ID: Expected long value but got '{value}'");
         }
 
-        public bool IsAuthenticated => GetClaimPrincipal().Identity.IsAuthenticated;
+        public virtual bool IsAuthenticated => GetClaimPrincipal().Identity.IsAuthenticated;
 
-        public List<string> GetRoles()
+        public virtual List<string> GetRoles()
         {
             var user = GetClaimPrincipal();
             var roles = user
