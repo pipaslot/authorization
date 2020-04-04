@@ -15,7 +15,10 @@ namespace Pipaslot.Authorization
         public virtual TUserId GetUserId()
         {
             var user = GetClaimPrincipal();
-
+            if (user == null)
+            {
+                return default;
+            }
             var identityClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             if (identityClaim != null)
             {
@@ -79,11 +82,15 @@ namespace Pipaslot.Authorization
             throw new ArgumentOutOfRangeException($"User ID: Expected long value but got '{value}'");
         }
 
-        public virtual bool IsAuthenticated => GetClaimPrincipal().Identity.IsAuthenticated;
+        public virtual bool IsAuthenticated => GetClaimPrincipal()?.Identity?.IsAuthenticated ?? false;
 
         public virtual List<string> GetRoles()
         {
             var user = GetClaimPrincipal();
+            if (user == null)
+            {
+                return new List<string>();
+            }
             var roles = user
                 .FindAll(ClaimTypes.Role)
                 .Select(claim => claim.Value)
