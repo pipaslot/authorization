@@ -36,6 +36,33 @@ To make authentication and authorization working together you will have to imple
 If you are using web application, it just need to access ClaimPrincipal available from IHttpContextAccessor. 
 Then use method RoleToClaim when you will be adding roles to user identity.
 
+Simple example of basic identity provider:
+```
+public class WindowsIdentityProvider : IdentityProviderBase<string>
+    {
+        private readonly IHttpContextAccessor _accessor;
+
+        public IdentityProvider(IHttpContextAccessor accessor)
+        {
+            _accessor = accessor;
+        }
+
+        protected override ClaimsPrincipal GetClaimPrincipal()
+        {
+            return _accessor.HttpContext?.User ?? new ClaimsPrincipal();
+        }
+
+        protected override string WindowsUserNameToId(string name)
+        {
+            if (name?.Contains('\\') ?? false)
+            {
+                //Get rid of domain 
+                return name.Split('\\')[1];
+            }
+            return name;
+        }
+    }
+```
 ### Use in application
 Inject IUser interface and check for permissions
 ```
@@ -47,7 +74,7 @@ _user.CheckPermission(CompanyPermission.Create);
 #### User ID providing
 Let inject in your service generic implementation IUser<long> instead of IUser. The long is the same primary key configured in IServiceCollection.
 
-## Specify permission for different data(enities)
+## Specify permission for different data(entities)
 Lets define company permission for CRUD operations.
 ```
 [Resource("Companies", "Company management")]
