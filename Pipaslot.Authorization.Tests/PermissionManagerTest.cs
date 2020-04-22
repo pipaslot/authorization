@@ -12,6 +12,21 @@ namespace Pipaslot.Authorization.Tests
     public class PermissionManagerTest
     {
         [Test]
+        public void GetAllRersources()
+        {
+            var resourceCollection = new ResourceCollection();
+            resourceCollection.Add<Perm1>(1);
+            resourceCollection.Add<Perm2>(2);
+            var permissionStoreMock = new Mock<IPermissionStore>();
+
+            var service = new PermissionManager(resourceCollection, permissionStoreMock.Object, new PermissionCache(), new IResourceInstanceProvider[0]);
+            var resources = service.GetAllResources();
+
+            Assert.AreEqual(2, resources.Count);
+            Assert.AreNotEqual(0, resources.First().Permissions.First().PermissionId);
+        }
+
+        [Test]
         public async Task GetRersourcePermissions()
         {
             var roleId = "1";

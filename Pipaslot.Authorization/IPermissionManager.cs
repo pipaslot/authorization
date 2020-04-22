@@ -19,6 +19,11 @@ namespace Pipaslot.Authorization
         bool IsAllowed<TInstanceKey>(ICollection<string> roles, IConvertible permissionEnum, TInstanceKey instanceKey);
 
         /// <summary>
+        /// Provide all available resources and their permissions
+        /// </summary>
+        IReadOnlyList<ResourceDetail> GetAllResources();
+
+        /// <summary>
         /// Read all static permissions for role with resource and permission details
         /// </summary>
         Task<IReadOnlyList<ResourcePermissions>> GetResourcePermissionsAsync(string roleId);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Pipaslot.Authorization.Attributes;
 using Pipaslot.Authorization.Models;
@@ -85,6 +84,14 @@ namespace Pipaslot.Authorization
         {
             return _permissionStore.GetSystemRoles();
         }
+        
+        public IReadOnlyList<ResourceDetail> GetAllResources()
+        {
+            return _resources
+                .Select(ConvertResource)
+                .OrderBy(r => r.Name)
+                .ToList();
+        }
 
         public async Task<IReadOnlyList<ResourcePermissions>> GetResourcePermissionsAsync(string roleId)
         {
@@ -93,6 +100,30 @@ namespace Pipaslot.Authorization
                 .Select(r => ConvertResource(r, permissions))
                 .OrderBy(r => r.Name)
                 .ToList();
+        }
+
+        private ResourceDetail ConvertResource(ResourceDefinition resource)
+        {
+            var metadata = AttributeHelper.GetResourceMetadata(resource.PermissionEnumType);
+            var perms = new List<ResourceDetail.Permission>();
+            foreach (var permission in metadata.Permissions)
+            {
+                var uid = _resources.ToNumber(resource.PermissionEnumType, permission.Identifier);
+                perms.Add(new ResourceDetail.Permission
+                {
+                    Description = permission.Description,
+                    Name = permission.Name,
+                    PermissionId = uid.PermissionId
+                });
+            }
+            return new ResourceDetail
+            {
+                Name = metadata.Name,
+                Description = metadata.Description,
+                ResourceId = resource.ResourceId,
+                Permissions = perms,
+                HasInstancePermissions = metadata.Permissions.Any(p => p.IsForInstance)
+            };
         }
 
         private ResourcePermissions ConvertResource(ResourceDefinition resource, Dictionary<ResourcePermissionKey, bool> permissions)
