@@ -1,5 +1,8 @@
 # Authorization
-Permission based authorization
+Permission based authorization for *modular* applications. 
+Usefull when you need to distribute permission checks for every module, but with shared permission store and configuration.
+
+We strongly recommend to use Microsoft Identity Framework, if you do not need to build modular system.
 
 ## Basic usage
 You can define one or more different enums containing all permissions used in your application. 
